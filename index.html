@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ru" class="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Xray Monitor Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* --- Оживленный фон (Liquid Effect) --- */
+        body {
+            font-family: 'Unbounded', sans-serif;
+            background: linear-gradient(-45deg, #0a0f1e, #1a1445, #0f354d, #240b36);
+            background-size: 400% 400%;
+            animation: gradientBG 20s ease infinite;
+            color: #ffffff;
+            min-height: 100vh;
+        }
+
+        @keyframes gradientBG {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        /* --- Стиль Жидкого Стекла (Glassmorphism) --- */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            /* Почти прозрачный */
+            backdrop-filter: blur(20px) saturate(150%);
+            /* Размытие и насыщенность фона */
+            -webkit-backdrop-filter: blur(20px) saturate(150%);
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            /* Тонкая рамка */
+            /* Имитация света сверху слева */
+            border-top: 1px solid rgba(255, 255, 255, 0.3);
+            border-left: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            /* Глубокая тень */
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .glass-card:active {
+            transform: scale(0.98);
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        /* Неоновые акценты */
+        .text-neon-blue {
+            color: #00f2ff;
+            text-shadow: 0 0 10px rgba(0, 242, 255, 0.5);
+        }
+
+        .btn-glass {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(5px);
+            transition: 0.2s;
+        }
+
+        .btn-glass:hover {
+            background: rgba(0, 242, 255, 0.2);
+            border-color: rgba(0, 242, 255, 0.5);
+            box-shadow: 0 0 15px rgba(0, 242, 255, 0.3);
+        }
+
+        /* Анимация загрузки (Skeleton Shimmer) */
+        .shimmer {
+            background: linear-gradient(90deg, rgba(255, 255, 255, 0.05) 25%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.05) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: 200% 0;
+            }
+
+            100% {
+                background-position: -200% 0;
+            }
+        }
+    </style>
+</head>
+
+<body class="p-5 antialiased">
+    <header class="mb-10 flex justify-between items-end">
+        <div>
+            <p class="text-xs uppercase tracking-widest opacity-60 mb-1">Dashboard</p>
+            <h1 class="text-2xl font-bold uppercase tracking-tight text-neon-blue">Monitor<br>Hub</h1>
+        </div>
+        <div class="flex items-center space-x-2">
+            <span class="relative flex h-3 w-3">
+                <span
+                    class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-3 w-3 bg-cyan-500"></span>
+            </span>
+            <span class="text-xs font-medium opacity-80">ONLINE</span>
+        </div>
+    </header>
+
+    <div id="app" class="space-y-4">
+        <div class="glass-card p-6 h-24 flex items-center shimmer"></div>
+        <div class="glass-card p-6 h-24 flex items-center shimmer opacity-70"></div>
+        <div class="glass-card p-6 h-24 flex items-center shimmer opacity-50"></div>
+    </div>
+
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+        // Настраиваем главную кнопку в стиле приложения
+        tg.MainButton.setParams({
+            text: '🔄 ОБНОВИТЬ ДАННЫЕ',
+            color: '#1a1445', // Темно-синий под стать фону
+            text_color: '#00f2ff' // Неоновый голубой текст
+        });
+
+        // !!! ВАЖНО: Замени на свой IP VPS (HTTP) или домен (HTTPS) !!!
+        const API_URL = "http://ТВОЙ_IP_VPS:8080/api/versions";
+
+        async function fetchVersions() {
+            tg.MainButton.showProgress(); // Показываем крутилку на кнопке
+            try {
+                // Добавляем timestamp, чтобы избежать кэширования
+                const response = await fetch(`${API_URL}?t=${Date.now()}`);
+                if (!response.ok) throw new Error('Network error');
+                const data = await response.json();
+                render(data);
+            } catch (e) {
+                document.getElementById('app').innerHTML = `
+                    <div class="glass-card p-6 text-center border-red-500/50">
+                        <p class="text-red-400 font-medium mb-2">Ошибка соединения</p>
+                        <p class="text-xs opacity-60">Проверьте VPN или статус сервера</p>
+                    </div>`;
+            } finally {
+                tg.MainButton.hideProgress();
+                tg.MainButton.show();
+            }
+        }
+
+        function render(items) {
+            const container = document.getElementById('app');
+            container.innerHTML = items.map(item => `
+                <div class="glass-card p-6 flex justify-between items-center relative overflow-hidden">
+                    <div class="absolute -top-10 -left-10 w-20 h-20 bg-cyan-500 opacity-10 blur-3xl rounded-full pointer-events-none"></div>
+                    
+                    <div class="z-10">
+                        <div class="text-[10px] uppercase tracking-widest font-bold opacity-50 mb-2 text-cyan-300">${item.name}</div>
+                        <div class="text-xl font-medium tracking-tight flex items-center">
+                            ${item.version}
+                        </div>
+                    </div>
+                    <a href="${item.url}" target="_blank" class="btn-glass px-5 py-2 rounded-full text-xs uppercase font-bold tracking-wider z-10">
+                        GitHub
+                    </a>
+                </div>
+            `).join('');
+        }
+
+        tg.onEvent('mainButtonClicked', fetchVersions);
+        // Запускаем первичную загрузку
+        fetchVersions();
+    </script>
+</body>
+
+</html>
