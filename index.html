@@ -33,21 +33,16 @@
             }
         }
 
-        /* --- Стиль Жидкого Стекла (Glassmorphism) --- */
+        /* --- Стекло (Glassmorphism) --- */
         .glass-card {
             background: rgba(255, 255, 255, 0.03);
-            /* Почти прозрачный */
             backdrop-filter: blur(20px) saturate(150%);
-            /* Размытие и насыщенность фона */
             -webkit-backdrop-filter: blur(20px) saturate(150%);
             border-radius: 24px;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            /* Тонкая рамка */
-            /* Имитация света сверху слева */
             border-top: 1px solid rgba(255, 255, 255, 0.3);
             border-left: 1px solid rgba(255, 255, 255, 0.3);
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-            /* Глубокая тень */
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
@@ -56,7 +51,7 @@
             background: rgba(255, 255, 255, 0.06);
         }
 
-        /* Неоновые акценты */
+        /* Элементы интерфейса */
         .text-neon-blue {
             color: #00f2ff;
             text-shadow: 0 0 10px rgba(0, 242, 255, 0.5);
@@ -75,7 +70,7 @@
             box-shadow: 0 0 15px rgba(0, 242, 255, 0.3);
         }
 
-        /* Анимация загрузки (Skeleton Shimmer) */
+        /* Анимация загрузки */
         .shimmer {
             background: linear-gradient(90deg, rgba(255, 255, 255, 0.05) 25%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.05) 75%);
             background-size: 200% 100%;
@@ -97,7 +92,7 @@
 <body class="p-5 antialiased">
     <header class="mb-10 flex justify-between items-end">
         <div>
-            <p class="text-xs uppercase tracking-widest opacity-60 mb-1">Dashboard</p>
+            <p class="text-[10px] uppercase tracking-widest opacity-60 mb-1">Stark Industries</p>
             <h1 class="text-2xl font-bold uppercase tracking-tight text-neon-blue">Monitor<br>Hub</h1>
         </div>
         <div class="flex items-center space-x-2">
@@ -106,7 +101,7 @@
                     class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
                 <span class="relative inline-flex rounded-full h-3 w-3 bg-cyan-500"></span>
             </span>
-            <span class="text-xs font-medium opacity-80">ONLINE</span>
+            <span class="text-xs font-medium opacity-80">VPS</span>
         </div>
     </header>
 
@@ -119,29 +114,34 @@
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
-        // Настраиваем главную кнопку в стиле приложения
         tg.MainButton.setParams({
-            text: '🔄 ОБНОВИТЬ ДАННЫЕ',
-            color: '#1a1445', // Темно-синий под стать фону
-            text_color: '#00f2ff' // Неоновый голубой текст
+            text: '🔄 ОБНОВИТЬ СИСТЕМУ',
+            color: '#1a1445',
+            text_color: '#00f2ff'
         });
 
-        // !!! ВАЖНО: Замени на свой IP VPS (HTTP) или домен (HTTPS) !!!
-        const API_URL = "http://ТВОЙ_IP_VPS:8080/api/versions";
+        // --- КОНФИГУРАЦИЯ ---
+        const API_URL = "http://193.38.54.7:8080/api/versions";
+        // --------------------
 
         async function fetchVersions() {
-            tg.MainButton.showProgress(); // Показываем крутилку на кнопке
+            tg.MainButton.showProgress();
             try {
-                // Добавляем timestamp, чтобы избежать кэширования
+                // Добавляем timestamp против кэширования
                 const response = await fetch(`${API_URL}?t=${Date.now()}`);
                 if (!response.ok) throw new Error('Network error');
                 const data = await response.json();
                 render(data);
             } catch (e) {
+                console.error(e);
                 document.getElementById('app').innerHTML = `
                     <div class="glass-card p-6 text-center border-red-500/50">
-                        <p class="text-red-400 font-medium mb-2">Ошибка соединения</p>
-                        <p class="text-xs opacity-60">Проверьте VPN или статус сервера</p>
+                        <p class="text-red-400 font-medium mb-2">Нет соединения</p>
+                        <p class="text-[10px] opacity-60 leading-relaxed">
+                            Браузер заблокировал HTTP запрос.<br>
+                            Нажмите на иконку замка/щита в адресной строке<br>
+                            и разрешите "Небезопасный контент".
+                        </p>
                     </div>`;
             } finally {
                 tg.MainButton.hideProgress();
@@ -152,8 +152,8 @@
         function render(items) {
             const container = document.getElementById('app');
             container.innerHTML = items.map(item => `
-                <div class="glass-card p-6 flex justify-between items-center relative overflow-hidden">
-                    <div class="absolute -top-10 -left-10 w-20 h-20 bg-cyan-500 opacity-10 blur-3xl rounded-full pointer-events-none"></div>
+                <div class="glass-card p-6 flex justify-between items-center relative overflow-hidden group">
+                    <div class="absolute -top-10 -left-10 w-20 h-20 bg-cyan-500 opacity-10 blur-3xl rounded-full pointer-events-none group-hover:opacity-20 transition"></div>
                     
                     <div class="z-10">
                         <div class="text-[10px] uppercase tracking-widest font-bold opacity-50 mb-2 text-cyan-300">${item.name}</div>
@@ -161,7 +161,7 @@
                             ${item.version}
                         </div>
                     </div>
-                    <a href="${item.url}" target="_blank" class="btn-glass px-5 py-2 rounded-full text-xs uppercase font-bold tracking-wider z-10">
+                    <a href="${item.url}" target="_blank" class="btn-glass px-5 py-2 rounded-full text-[10px] uppercase font-bold tracking-wider z-10">
                         GitHub
                     </a>
                 </div>
@@ -169,7 +169,6 @@
         }
 
         tg.onEvent('mainButtonClicked', fetchVersions);
-        // Запускаем первичную загрузку
         fetchVersions();
     </script>
 </body>
