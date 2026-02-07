@@ -4,17 +4,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Xray Monitor Hub</title>
+    <title>Version Monitor</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        /* --- Оживленный фон (Liquid Effect) --- */
+        /* --- Фиолетовый Liquid Фон --- */
         body {
-            font-family: 'Unbounded', sans-serif;
-            background: linear-gradient(-45deg, #0a0f1e, #1a1445, #0f354d, #240b36);
+            font-family: 'Rajdhani', sans-serif;
+            background: linear-gradient(135deg, #0f0518, #1e0b36, #3b0764, #130428);
             background-size: 400% 400%;
-            animation: gradientBG 20s ease infinite;
+            animation: gradientBG 15s ease infinite;
             color: #ffffff;
             min-height: 100vh;
         }
@@ -33,46 +33,49 @@
             }
         }
 
-        /* --- Стиль Жидкого Стекла (Glassmorphism) --- */
+        /* --- Карточки (Glassmorphism) --- */
         .glass-card {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(20px) saturate(150%);
-            -webkit-backdrop-filter: blur(20px) saturate(150%);
-            border-radius: 24px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-top: 1px solid rgba(255, 255, 255, 0.3);
-            border-left: 1px solid rgba(255, 255, 255, 0.3);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: rgba(40, 10, 60, 0.3);
+            /* Полупрозрачный фиолетовый */
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border-radius: 20px;
+            border: 1px solid rgba(236, 72, 153, 0.15);
+            /* Тонкая розовая рамка */
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.2s ease;
         }
 
         .glass-card:active {
             transform: scale(0.98);
-            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(236, 72, 153, 0.5);
         }
 
-        /* Неоновые элементы */
-        .text-neon-blue {
-            color: #00f2ff;
-            text-shadow: 0 0 10px rgba(0, 242, 255, 0.5);
+        /* --- Типографика и Элементы --- */
+        .text-neon-pink {
+            color: #f472b6;
+            text-shadow: 0 0 15px rgba(236, 72, 153, 0.5);
         }
 
         .btn-glass {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(5px);
-            transition: 0.2s;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #e5e7eb;
+            transition: 0.3s;
         }
 
         .btn-glass:hover {
-            background: rgba(0, 242, 255, 0.2);
-            border-color: rgba(0, 242, 255, 0.5);
-            box-shadow: 0 0 15px rgba(0, 242, 255, 0.3);
+            background: rgba(236, 72, 153, 0.2);
+            border-color: #ec4899;
+            color: white;
+            box-shadow: 0 0 15px rgba(236, 72, 153, 0.3);
         }
 
         /* Анимация загрузки */
         .shimmer {
-            background: linear-gradient(90deg, rgba(255, 255, 255, 0.05) 25%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.05) 75%);
+            background: linear-gradient(90deg, rgba(255, 255, 255, 0.02) 25%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0.02) 75%);
             background-size: 200% 100%;
             animation: shimmer 1.5s infinite;
         }
@@ -90,56 +93,50 @@
 </head>
 
 <body class="p-5 antialiased">
-    <header class="mb-10 flex justify-between items-end">
-        <div>
-            <p class="text-[10px] uppercase tracking-widest opacity-60 mb-1">Stark Industries</p>
-            <h1 class="text-2xl font-bold uppercase tracking-tight text-neon-blue">Monitor<br>Hub</h1>
-        </div>
-        <div class="flex items-center space-x-2">
-            <span class="relative flex h-3 w-3">
-                <span
-                    class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
-                <span class="relative inline-flex rounded-full h-3 w-3 bg-cyan-500"></span>
-            </span>
-            <span class="text-xs font-medium opacity-80">SECURE</span>
+    <header class="mb-6 pt-4 text-center">
+        <h1 class="text-3xl font-bold uppercase tracking-[0.15em] text-neon-pink">
+            Version Monitor
+        </h1>
+        <div class="h-0.5 w-16 mx-auto mt-3 bg-gradient-to-r from-transparent via-pink-500 to-transparent opacity-70">
         </div>
     </header>
 
     <div id="app" class="space-y-4">
-        <div class="glass-card p-6 h-24 flex items-center shimmer"></div>
-        <div class="glass-card p-6 h-24 flex items-center shimmer opacity-70"></div>
-        <div class="glass-card p-6 h-24 flex items-center shimmer opacity-50"></div>
+        <div class="glass-card p-6 h-28 shimmer"></div>
+        <div class="glass-card p-6 h-28 shimmer opacity-70"></div>
+        <div class="glass-card p-6 h-28 shimmer opacity-50"></div>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
+
+        // Настройка главной кнопки
         tg.MainButton.setParams({
-            text: '🔄 ОБНОВИТЬ СИСТЕМУ',
-            color: '#1a1445',
-            text_color: '#00f2ff'
+            text: '⚡ ОБНОВИТЬ ДАННЫЕ',
+            color: '#3b0764', // Глубокий фиолетовый
+            text_color: '#f472b6' // Розовый неон
         });
 
-        // --- ТВОЯ ССЫЛКА CLOUDFLARE ---
+        // --- ТВОЯ ССЫЛКА ---
         const API_URL = "https://lol-mae-air-bumper.trycloudflare.com/api/versions";
 
         async function fetchVersions() {
             tg.MainButton.showProgress();
             try {
-                // Добавляем timestamp, чтобы данные всегда были свежими
+                // ?t=... заставляет браузер игнорировать кэш и грузить свежее
                 const response = await fetch(`${API_URL}?t=${Date.now()}`);
+
                 if (!response.ok) throw new Error('Network error');
+
                 const data = await response.json();
                 render(data);
             } catch (e) {
                 console.error(e);
                 document.getElementById('app').innerHTML = `
-                    <div class="glass-card p-6 text-center border-red-500/50">
-                        <p class="text-red-400 font-medium mb-2">Ошибка туннеля</p>
-                        <p class="text-[10px] opacity-60 leading-relaxed">
-                            Не удалось подключиться к Cloudflare.<br>
-                            Убедитесь, что cloudflared запущен на VPS.
-                        </p>
+                    <div class="glass-card p-6 text-center border-red-500/50 flex flex-col items-center justify-center h-40">
+                        <p class="text-pink-400 font-bold text-lg mb-2">Нет соединения</p>
+                        <p class="text-xs opacity-60 max-w-[200px]">Проверьте, запущен ли cloudflared на сервере</p>
                     </div>`;
             } finally {
                 tg.MainButton.hideProgress();
@@ -150,23 +147,34 @@
         function render(items) {
             const container = document.getElementById('app');
             container.innerHTML = items.map(item => `
-                <div class="glass-card p-6 flex justify-between items-center relative overflow-hidden group">
-                    <div class="absolute -top-10 -left-10 w-20 h-20 bg-cyan-500 opacity-10 blur-3xl rounded-full pointer-events-none group-hover:opacity-20 transition"></div>
+                <div class="glass-card p-5 flex flex-col justify-between group min-h-[110px]">
+                    <div class="flex justify-between items-start">
+                        <div class="text-[10px] uppercase tracking-[0.25em] font-bold text-pink-300 opacity-60">
+                            ${item.name}
+                        </div>
+                        <a href="${item.url}" target="_blank" class="btn-glass px-3 py-1.5 rounded-lg text-[10px] uppercase font-bold tracking-widest">
+                            GitHub
+                        </a>
+                    </div>
                     
-                    <div class="z-10">
-                        <div class="text-[10px] uppercase tracking-widest font-bold opacity-50 mb-2 text-cyan-300">${item.name}</div>
-                        <div class="text-xl font-medium tracking-tight flex items-center">
+                    <div class="mt-2">
+                        <div class="text-2xl font-bold tracking-tight text-white flex items-center">
                             ${item.version}
                         </div>
+                        <div class="text-xs font-mono text-pink-400 opacity-80 mt-1 flex items-center gap-2">
+                            <span class="opacity-40 uppercase tracking-wider">Released:</span> 
+                            <span>${item.date || 'Checking...'}</span>
+                        </div>
                     </div>
-                    <a href="${item.url}" target="_blank" class="btn-glass px-5 py-2 rounded-full text-[10px] uppercase font-bold tracking-wider z-10">
-                        GitHub
-                    </a>
+                    
+                    <div class="absolute -bottom-6 -right-6 w-20 h-20 bg-pink-600 opacity-10 blur-xl rounded-full pointer-events-none group-hover:opacity-30 transition duration-500"></div>
                 </div>
             `).join('');
         }
 
         tg.onEvent('mainButtonClicked', fetchVersions);
+
+        // Запуск
         fetchVersions();
     </script>
 </body>
