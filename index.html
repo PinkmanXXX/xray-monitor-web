@@ -33,7 +33,7 @@
             }
         }
 
-        /* --- Стекло (Glassmorphism) --- */
+        /* --- Стиль Жидкого Стекла (Glassmorphism) --- */
         .glass-card {
             background: rgba(255, 255, 255, 0.03);
             backdrop-filter: blur(20px) saturate(150%);
@@ -51,7 +51,7 @@
             background: rgba(255, 255, 255, 0.06);
         }
 
-        /* Элементы интерфейса */
+        /* Неоновые элементы */
         .text-neon-blue {
             color: #00f2ff;
             text-shadow: 0 0 10px rgba(0, 242, 255, 0.5);
@@ -101,7 +101,7 @@
                     class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
                 <span class="relative inline-flex rounded-full h-3 w-3 bg-cyan-500"></span>
             </span>
-            <span class="text-xs font-medium opacity-80">VPS</span>
+            <span class="text-xs font-medium opacity-80">SECURE</span>
         </div>
     </header>
 
@@ -120,14 +120,13 @@
             text_color: '#00f2ff'
         });
 
-        // --- КОНФИГУРАЦИЯ ---
-        const API_URL = "http://193.38.54.7:8080/api/versions";
-        // --------------------
+        // --- ТВОЯ ССЫЛКА CLOUDFLARE ---
+        const API_URL = "https://lol-mae-air-bumper.trycloudflare.com/api/versions";
 
         async function fetchVersions() {
             tg.MainButton.showProgress();
             try {
-                // Добавляем timestamp против кэширования
+                // Добавляем timestamp, чтобы данные всегда были свежими
                 const response = await fetch(`${API_URL}?t=${Date.now()}`);
                 if (!response.ok) throw new Error('Network error');
                 const data = await response.json();
@@ -136,11 +135,10 @@
                 console.error(e);
                 document.getElementById('app').innerHTML = `
                     <div class="glass-card p-6 text-center border-red-500/50">
-                        <p class="text-red-400 font-medium mb-2">Нет соединения</p>
+                        <p class="text-red-400 font-medium mb-2">Ошибка туннеля</p>
                         <p class="text-[10px] opacity-60 leading-relaxed">
-                            Браузер заблокировал HTTP запрос.<br>
-                            Нажмите на иконку замка/щита в адресной строке<br>
-                            и разрешите "Небезопасный контент".
+                            Не удалось подключиться к Cloudflare.<br>
+                            Убедитесь, что cloudflared запущен на VPS.
                         </p>
                     </div>`;
             } finally {
