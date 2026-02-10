@@ -2,88 +2,209 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Debug Monitor</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Liquid Monitor</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body { background: #000; color: #fff; font-family: sans-serif; padding: 20px; }
-        .box { background: #111; border: 1px solid #333; padding: 15px; border-radius: 12px; margin-bottom: 10px; }
-        .error { color: #ff4444; word-break: break-all; font-family: monospace; font-size: 12px; }
-        .success { color: #44ff44; }
+        /* --- Apple System Fonts --- */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+            background-color: #000000;
+            color: #ffffff;
+            min-height: 100vh;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            -webkit-font-smoothing: antialiased;
+            padding: 20px;
+        }
+
+        /* --- Жидкие пятна (Orbs) --- */
+        .orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(90px);
+            z-index: -1;
+            opacity: 0.6;
+            animation: float 25s infinite ease-in-out;
+        }
+        .orb-1 {
+            width: 350px; height: 350px;
+            background: #4f46e5; /* Indigo */
+            top: -100px; left: -100px;
+        }
+        .orb-2 {
+            width: 300px; height: 300px;
+            background: #c026d3; /* Fuchsia */
+            bottom: -50px; right: -50px;
+            animation-delay: -5s;
+        }
+        .orb-3 {
+            width: 250px; height: 250px;
+            background: #0ea5e9; /* Sky */
+            top: 40%; left: 50%;
+            transform: translate(-50%, -50%);
+            animation-delay: -10s;
+            opacity: 0.4;
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(30px, -30px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+            100% { transform: translate(0, 0) scale(1); }
+        }
+
+        /* --- Glassmorphism Cards --- */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(40px) saturate(180%);
+            -webkit-backdrop-filter: blur(40px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            transition: transform 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+            margin-bottom: 16px;
+        }
+        .glass-panel:active {
+            transform: scale(0.98);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        /* --- Typography & UI --- */
+        .card-label {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: rgba(255, 255, 255, 0.5);
+            margin-bottom: 6px;
+        }
+        
+        .version-text {
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            background: linear-gradient(180deg, #ffffff 0%, #a5a5a5 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1.1;
+        }
+
+        .btn-open {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
+            width: 40px; height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+        .btn-open:active { background: rgba(255, 255, 255, 0.25); }
+
+        /* Loader */
+        .shimmer {
+            background: linear-gradient(90deg, rgba(255,255,255,0.02) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.02) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
     </style>
 </head>
 <body>
-    <h1 class="text-xl font-bold mb-4">System Diagnose</h1>
-    
-    <div id="status" class="box">
-        <p class="text-gray-500">Initializing...</p>
-    </div>
 
-    <div id="app" class="space-y-2"></div>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+
+    <header class="flex justify-between items-end mb-8 mt-2">
+        <div>
+            <h1 class="text-3xl font-bold tracking-tight text-white">Hub</h1>
+            <p class="text-sm text-white/50 font-medium">System Versions</p>
+        </div>
+        <div class="glass-panel w-10 h-10 rounded-full flex items-center justify-center border-0 bg-green-500/10 mb-0">
+            <div class="w-2.5 h-2.5 bg-green-400 rounded-full shadow-[0_0_12px_rgba(74,222,128,0.8)]"></div>
+        </div>
+    </header>
+
+    <div id="app" class="pb-24">
+        <div class="glass-panel h-32 shimmer"></div>
+        <div class="glass-panel h-32 shimmer opacity-70"></div>
+        <div class="glass-panel h-32 shimmer opacity-50"></div>
+    </div>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
+        // Красивая кнопка внизу
+        tg.MainButton.setParams({
+            text: 'REFRESH DATA',
+            color: '#1c1c1e',
+            text_color: '#ffffff'
+        });
 
-        // --- ПРОВЕРЬ ЭТУ ССЫЛКУ!!! ---
-        // Вставь сюда то, что выдал journalctl -u cloudflared
+        // ССЫЛКА ИЗ ТВОЕГО СКРИНШОТА
         const API_URL = "https://councils-unnecessary-springfield-essay.trycloudflare.com/api/versions";
 
-        function log(msg, type = 'text-gray-500') {
-            document.getElementById('status').innerHTML += `<p class="${type}">${msg}</p>`;
-        }
-
-        async function debugFetch() {
-            const container = document.getElementById('app');
-            document.getElementById('status').innerHTML = '<p class="text-blue-400">Step 1: Starting Request...</p>';
-            
-            log(`Target: ${API_URL}`, 'text-yellow-500');
-
+        async function loadData() {
+            tg.MainButton.showProgress();
             try {
+                // Добавляем случайное число t, чтобы браузер не кэшировал запрос
                 const response = await fetch(`${API_URL}?t=${Date.now()}`);
                 
-                log(`Step 2: Response Status: ${response.status}`, response.ok ? 'success' : 'error');
-
-                if (!response.ok) {
-                    throw new Error(`HTTP Error: ${response.status}`);
-                }
-
-                const data = await response.json();
-                log(`Step 3: Data JSON Parsed`, 'success');
+                if (!response.ok) throw new Error("Server Offline");
                 
-                // Рендер данных
-                container.innerHTML = data.map(item => `
-                    <div class="box border-green-900">
-                        <div class="font-bold">${item.name}</div>
-                        <div class="text-xl">${item.version}</div>
-                        <div class="text-xs text-gray-500">${item.date}</div>
-                    </div>
-                `).join('');
-
+                const data = await response.json();
+                render(data);
             } catch (e) {
-                console.error(e);
-                log(`CRITICAL ERROR: ${e.message}`, 'error');
-                container.innerHTML = `
-                    <div class="box border-red-900 bg-red-900/20">
-                        <p class="font-bold text-red-500">CONNECTION FAILED</p>
-                        <p class="text-xs mt-2">Possible reasons:</p>
-                        <ul class="list-disc ml-4 text-xs text-gray-400">
-                            <li>Wrong Cloudflare URL in index.html</li>
-                            <li>Python bot is stopped</li>
-                            <li>Cloudflared tunnel is down</li>
-                        </ul>
-                    </div>
-                `;
+                document.getElementById('app').innerHTML = `
+                    <div class="glass-panel p-6 text-center flex flex-col items-center justify-center py-12">
+                         <div class="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center mb-4 text-red-400 text-2xl">⚡️</div>
+                        <p class="text-white font-bold text-lg">Connection Issue</p>
+                        <p class="text-white/40 text-sm mt-2 max-w-[200px]">Server is restarting or updating data. Try again in 30s.</p>
+                    </div>`;
+            } finally {
+                tg.MainButton.hideProgress();
+                tg.MainButton.show();
             }
         }
 
-        // Кнопка перезагрузки
-        tg.MainButton.setText('TEST CONNECTION');
-        tg.MainButton.show();
-        tg.onEvent('mainButtonClicked', () => location.reload());
+        function render(items) {
+            const container = document.getElementById('app');
+            // Если данные пустые (еще качаются)
+            if (items.length === 0 || (items.length === 1 && items[0].version === "Загрузка...")) {
+                 container.innerHTML = `<div class="glass-panel h-32 shimmer"></div><p class="text-center text-white/30 text-xs mt-4">Fetching data from GitHub...</p>`;
+                 return;
+            }
 
-        debugFetch();
+            container.innerHTML = items.map(item => `
+                <div class="glass-panel p-6 relative group">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <div class="card-label">${item.name}</div>
+                            <div class="version-text">${item.version}</div>
+                        </div>
+                        <a href="${item.url}" target="_blank" class="btn-open">
+                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                        </a>
+                    </div>
+                    
+                    <div class="mt-5 pt-4 border-t border-white/5 flex items-center gap-2">
+                        <svg class="w-3.5 h-3.5 text-white/30" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        <span class="text-[13px] font-medium text-white/40">
+                            ${item.date || 'Updating...'}
+                        </span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        tg.onEvent('mainButtonClicked', loadData);
+        // Загружаем данные сразу при открытии
+        loadData();
     </script>
 </body>
 </html>
